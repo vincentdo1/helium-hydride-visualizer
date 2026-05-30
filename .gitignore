@@ -1,16 +1,12 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
-.pnp.js
-
-# testing
-/coverage
+.pnp.*
 
 # next.js
 /.next/
 /out/
+next-env.d.ts
 
 # production
 /build
@@ -23,14 +19,28 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
-# local env files
-.env*.local
-.env
-
-# vercel
-.vercel
+# env
+.env*
+!.env.example
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+
+# deploy
+.vercel
+
+# python pre-compute pipeline (scripts/)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.ipynb_checkpoints/
+
+# transient quantum-chem scratch (PySCF writes large temp files)
+*.chk
+*.h5
+tmp*/
+scratch/
