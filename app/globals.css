@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-he: var(--he);
+  --color-h: var(--h);
+}
+
+:root {
+  /* Black-and-white "space" identity. The UI is monochrome; the only colour in
+     the whole experience is the two atoms (cyan He / amber H), so they read like
+     coloured stars against the void. Accent (--primary) is near-white. */
+  --background: oklch(0.04 0 0);
+  --foreground: oklch(0.97 0 0);
+  --primary: oklch(0.97 0 0);
+  --he: #22d3ee; /* helium: electron-rich δ− end (cyan) */
+  --h: #f59e0b; /* hydrogen: electron-poor δ+ end (amber) */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Each scene is a full-viewport scroll section with an id used for deep-links
+   (#cosmos / #density / #vibrational / #dissociation) coming from the portfolio. */
+.scene {
+  position: relative;
+  min-height: 100dvh;
+  scroll-snap-align: start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
