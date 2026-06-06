@@ -1,64 +1,52 @@
-# Helium Hydride (HeH⁺) — Interactive 3D Visualizer
+# Helium Hydride (HeH+) Interactive Visualizer
 
-A state-of-the-art, scientifically grounded visualization of **helium hydride**,
-the first molecule to form in the universe. Companion to the `CHM-005` project
-on [vmd306.com](https://vmd306.com); the portfolio links here via
-`NEXT_PUBLIC_HEH_VIZ_URL` with scene deep-links (`#density`, `#vibrational`,
-`#dissociation`, `#cosmos`).
+An interactive Next.js + Three.js visualization of helium hydride, the molecular
+ion widely described as the first molecular bond of the early universe.
 
-> **Status: runnable skeleton.** The scenes render now on an **analytical LCAO
-> density** placeholder. The offline PySCF/DVR pipeline in `scripts/` upgrades
-> this to **ab-initio FCI** density and spectroscopically accurate vibrational
-> states. HeH⁺ has only two electrons, so FCI is exact within the basis and
-> identical to CCSD — rigour comes from basis quality + literature calibration.
+V1 is intentionally compact: a short cosmic-origin landing page at `/`, then a
+single molecule instrument at `/molecule` with four modes:
 
-## Four scenes
+- Formation: drag neutral He and a proton together.
+- Density skew: inspect the electron probability cloud and dipole.
+- Vibration: compare isotopologues through a mass-scaled DVR sketch.
+- Dissociation: stretch the bond and watch density collapse back to helium.
 
-1. **Density skew** (`#density`) — ray-marched volume render of ρ(r); electrons
-   pile onto He despite the proton carrying the formal charge.
-2. **Vibration & isotopes** (`#vibrational`) — live sinc-DVR solve; swap
-   ⁴HeH⁺/⁴HeD⁺/⁴HeT⁺/³HeH⁺ to see ZPE drop and ψ₀ localise.
-3. **Dissociation** (`#dissociation`) — scrub the bond length; the difference
-   density Δρ shows charge redistribution toward the He+H⁺ / He⁺+H asymptotes.
-   (Δρ is _not_ a physical current — a stationary real eigenstate carries none.)
-4. **Cosmic origin** (`#cosmos`) — scroll-driven narrative from recombination to
-   the 2019 NGC 7027 detection.
+The live cloud is an analytical, literature-calibrated model designed for fast
+browser interaction. It is not a shipped ab-initio density grid.
 
 ## Develop
 
 ```bash
 npm install
-npm run dev        # http://localhost:3010
+npm run dev
 npm run build
+npm run lint
 ```
 
-## Generate real data (offline)
+The dev server runs on [http://localhost:3010](http://localhost:3010).
 
-```bash
-pip install pyscf numpy scipy
-python scripts/compute-density.py --out ./data        # FCI density grids + PES
-python scripts/solve-dvr.py --manifest ./data/density-manifest.json --out ./data/vibrational
-```
+## Project Structure
 
-Then point `lib/data-loader.ts` at the generated `data/` assets (the function
-signatures already match). Large binaries are tracked with **Git LFS** — run
-`git lfs install` first (see `.gitattributes`).
-
-## Architecture
-
-```
-app/                     Next.js app-router shell
+```text
+app/                       Next.js app-router pages and global styles
 components/
-  scene-host.tsx         scroll host + deep-link nav + code-split scenes
-  scenes/                cosmic-origin · density · vibrational · dissociation
-  viz/                   volume-renderer (GLSL ray-march) · molecule · canvas
-  ui/                    controls · data-methods drawer
+  scene-host.tsx           landing page host and legacy hash forwarding
+  molecule-viewer.tsx      /molecule instrument shell and copy
+  scenes/cosmic-origin.tsx landing narrative
+  ui/controls.tsx          current molecule controls
+  viz/                     Three.js canvas, molecule visuals, effects
 lib/
-  constants.ts           verified spectroscopic constants + citations
-  data-loader.ts         interface to offline pipeline (placeholder-backed)
-  physics/               density (analytical LCAO) · dvr (sinc-DVR)
-scripts/                 PySCF density + DVR generators (run offline)
-data/                    generated assets (Git LFS)
+  constants.ts             literature anchors and UI constants
+  physics/                 analytical density, DVR, and Monte-Carlo swarm
 ```
 
-License: MIT (`LICENSE`). Asset attribution: `CREDITS.md`.
+## Scientific Anchors
+
+- HeH+ formation in the early universe: neutral helium + proton radiative
+  association.
+- First astrophysical detection: SOFIA/upGREAT observation of the J = 1-0 line
+  toward NGC 7027, published in Nature in 2019.
+- Structural and spectroscopic constants are kept in `lib/constants.ts` with
+  source labels surfaced in the in-app Data & Methods panel.
+
+License: MIT (`LICENSE`). Reference and library notes: `CREDITS.md`.

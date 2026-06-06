@@ -31,6 +31,9 @@ yarn-error.log*
 # deploy
 .vercel
 
+# local assistant/editor config
+.claude/
+
 # python pre-compute pipeline (scripts/)
 __pycache__/
 *.py[cod]

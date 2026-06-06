@@ -41,7 +41,11 @@ export function SceneCanvas({
       {/* soft key + cool rim, low ambient so the glow reads against the dark */}
       <ambientLight intensity={0.35} />
       <directionalLight position={[3, 4, 5]} intensity={1.1} />
-      <directionalLight position={[-4, -2, -3]} intensity={0.4} color="#88aaff" />
+      <directionalLight
+        position={[-4, -2, -3]}
+        intensity={0.4}
+        color="#88aaff"
+      />
 
       <Stars
         radius={60}

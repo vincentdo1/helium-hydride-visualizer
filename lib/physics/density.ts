@@ -1,9 +1,8 @@
-// Analytical placeholder electron density for HeH⁺.
+// Analytical electron-density sketch for HeH⁺.
 //
-// This is NOT the real ab-initio density — it is a fast LCAO-of-Slater-type-
-// orbitals model used to make the swarm / volume renderer runnable before the
-// PySCF pipeline (scripts/compute-density.py) produces real grids. The real
-// loader (lib/data-loader.ts) will swap this out for FCI/aug-cc-pV5Z cubes.
+// This is a fast LCAO-of-Slater-type-orbitals model used by the interactive
+// swarm. It is calibrated for visual honesty and speed, not claimed as an
+// ab-initio density grid.
 //
 // Model: ρ(r) = | c_He·χ_He(r−R_He) + c_H·χ_H(r−R_H) |²
 //   χ(r) = √(ζ³/π)·exp(−ζ·|r|)      (NORMALISED 1s Slater orbital)

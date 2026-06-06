@@ -24,7 +24,7 @@ export function IsotopeSelector({
             <button
               key={iso.id}
               onClick={() => onChange(iso)}
-              className={`px-3 py-1.5 rounded font-mono text-sm transition-colors ${
+              className={`rounded px-3 py-1.5 font-mono text-sm transition-colors ${
                 active
                   ? "bg-[var(--primary)] text-black"
                   : "bg-white/5 text-white/70 hover:bg-white/10"
@@ -62,77 +62,6 @@ export function BondSlider({
         min={min}
         max={max}
         step={0.01}
-        value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full accent-[var(--primary)]"
-      />
-    </div>
-  );
-}
-
-export function Toggle({
-  options,
-  value,
-  onChange,
-  title,
-}: {
-  options: { id: string; label: string }[];
-  value: string;
-  onChange: (id: string) => void;
-  title: string;
-}) {
-  return (
-    <div className={panel}>
-      <div className={label}>{title}</div>
-      <div className="flex gap-2">
-        {options.map((o) => {
-          const active = o.id === value;
-          return (
-            <button
-              key={o.id}
-              onClick={() => onChange(o.id)}
-              className={`px-3 py-1.5 rounded font-mono text-xs transition-colors ${
-                active
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-white/5 text-white/70 hover:bg-white/10"
-              }`}
-            >
-              {o.label}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-export function Slider({
-  title,
-  value,
-  min,
-  max,
-  step = 0.01,
-  format,
-  onChange,
-}: {
-  title: string;
-  value: number;
-  min: number;
-  max: number;
-  step?: number;
-  format?: (v: number) => string;
-  onChange: (v: number) => void;
-}) {
-  return (
-    <div className={panel}>
-      <div className={label}>
-        {title} · {format ? format(value) : value.toFixed(2)}
-      </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="w-full accent-[var(--primary)]"

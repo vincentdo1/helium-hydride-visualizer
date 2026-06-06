@@ -8,22 +8,22 @@ const beats = [
   {
     k: "recombination",
     title: "The universe cools",
-    body: "A few hundred thousand years after the Big Bang the plasma cools below a few thousand kelvin. Bare nuclei and free electrons drift through a cooling fog.",
+    body: "During recombination, the young universe cooled through a few thousand kelvin. Light-element ions and free electrons began settling into neutral atoms.",
   },
   {
     k: "helium-first",
     title: "Helium recombines first",
-    body: "Helium has the higher ionization energy, so it captures electrons before hydrogen. Neutral He appears while protons (H⁺) are still everywhere.",
+    body: "Because helium ions have higher ionization potentials than hydrogen, helium became neutral first while many protons (H⁺) remained available.",
   },
   {
     k: "formation",
     title: "He + H⁺ → HeH⁺ + γ",
-    body: "Neutral helium meets a free proton and the first molecular bond in the cosmos forms — radiating away a photon. Helium hydride is born.",
+    body: "Neutral helium could then bind with a proton by radiative association. The photon carries away excess energy, leaving the helium hydride ion.",
   },
   {
     k: "detection",
     title: `Found at last — ${NGC_7027_DETECTION_YEAR}`,
-    body: "Predicted for decades, HeH⁺ was finally detected in the planetary nebula NGC 7027 by SOFIA/GREAT (Güsten et al., Nature 2019).",
+    body: "Predicted for decades, HeH⁺ was detected astrophysically in NGC 7027 with SOFIA/upGREAT through its J = 1–0 rotational line at 149.1 µm.",
   },
 ];
 
@@ -55,16 +55,16 @@ export function CosmicOrigin() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,rgba(255,255,255,0.06),transparent_55%)]" />
       </motion.div>
 
-      <div className="mx-auto max-w-2xl px-6 pt-[18vh] pb-[10vh] text-center">
-        <div className="font-mono text-[11px] uppercase tracking-[0.4em] text-[var(--primary)]">
+      <div className="mx-auto max-w-2xl px-5 pb-[10vh] pt-[16vh] text-center sm:px-6 sm:pt-[18vh]">
+        <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[var(--primary)] sm:text-[11px] sm:tracking-[0.4em]">
           Helium hydride · HeH⁺
         </div>
-        <h1 className="mt-4 text-5xl md:text-7xl font-semibold leading-tight">
+        <h1 className="mx-auto mt-4 max-w-[19rem] text-3xl font-semibold leading-tight sm:max-w-2xl sm:text-5xl md:text-7xl">
           The first molecule
           <br />
           in the universe
         </h1>
-        <p className="mt-5 text-white/55">
+        <p className="mx-auto mt-5 max-w-[21rem] text-white/55 sm:max-w-md">
           Scroll to trace its story — from the recombination epoch to its 2019
           detection — then explore its behavior in 3D.
         </p>
@@ -87,13 +87,13 @@ function Beat({
   body: string;
 }) {
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-6">
+    <div className="flex min-h-[80vh] items-center justify-center px-5 sm:px-6">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-20%" }}
         transition={{ duration: 0.6 }}
-        className="max-w-xl rounded-lg border border-white/10 bg-black/40 p-8 backdrop-blur"
+        className="max-w-xl rounded-lg border border-white/10 bg-black/40 p-5 backdrop-blur sm:p-8"
       >
         <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/40">
           0{index + 1}

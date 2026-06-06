@@ -2,12 +2,7 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import {
-  type Group,
-  type Mesh,
-  type Points,
-  type ShaderMaterial,
-} from "three";
+import { type Group, type Mesh, type Points, type ShaderMaterial } from "three";
 import { createSwarm, stepSwarm, type SwarmState } from "@/lib/physics/swarm";
 import { makeHehDensity, nucleiPositions } from "@/lib/physics/density";
 import { Atom, CloudShell, SoftPoints } from "@/components/viz/primitives";

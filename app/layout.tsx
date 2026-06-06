@@ -17,7 +17,7 @@ const jetBrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Helium Hydride (HeH⁺) — Interactive Visualizer",
   description:
-    "Explore the first molecule in the universe: electron-density skew, isotope effects, bond dissociation, and cosmic origin — built on pre-computed quantum-chemistry data.",
+    "Explore helium hydride, the first molecular ion of the early universe, with a literature-calibrated 3D electron-density visualization.",
 };
 
 export default function RootLayout({

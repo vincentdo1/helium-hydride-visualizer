@@ -1,10 +1,6 @@
-// Spectroscopic and structural constants for helium hydride (HeH⁺).
-//
-// HeH⁺ has only TWO electrons. Full configuration interaction (FCI) is therefore
-// exact within the basis and identical to CCSD for this system — there are no
-// triple excitations, so a perturbative (T) correction is identically zero. The
-// rigour of the data pipeline comes from basis-set quality + calibration to the
-// non-Born–Oppenheimer literature, NOT from the choice of correlation method.
+// Literature-backed constants and display anchors for helium hydride (HeH+).
+// The live V1 viewer is an educational analytical model, so these values are
+// used to keep the visual story calibrated to the spectroscopic literature.
 //
 // References
 //   - Bishop & Cheung (1979)  J. Mol. Spectrosc. 75, 462.  ωe, Be, anharmonicity
@@ -16,15 +12,17 @@
 // ---- Structural ----------------------------------------------------------
 export const BOND_LENGTH_ANGSTROM = 0.7743; // equilibrium re
 export const DISSOCIATION_ENERGY_EV = 2.04; // De (well depth, excludes ZPE)
+export const DISSOCIATION_FROM_V0_EV = 1.845; // D0 from v=0, J=0
 // Dipole is ORIGIN-DEPENDENT for a charged ion; quoted about the centre of mass.
-export const DIPOLE_MOMENT_DEBYE = 1.66; // μe (Engel 2005)
+export const DIPOLE_MOMENT_DEBYE = 1.66; // μe
 
 // ---- Vibrational / rotational (cm⁻¹) ------------------------------------
 export const HARMONIC_FREQUENCY_CM = 3228.3; // ωe
-export const ANHARMONICITY_CM = 174.1; // ωe·xe
-export const ROT_CONSTANT_CM = 33.56; // Be
+export const ROT_CONSTANT_CM = 33.526; // Be
 
-// ---- Electron partition (≈, natural-orbital / Mulliken) -----------------
+// ---- Electron partition --------------------------------------------------
+// Approximate display readout from the toy LCAO density. The robust claim is
+// qualitative: both electrons are mostly centered near the helium nucleus.
 export const TOTAL_ELECTRONS = 2;
 export const ELECTRONS_ON_HE = 1.7;
 export const ELECTRONS_ON_H = 0.3;
@@ -77,37 +75,31 @@ export const ISOTOPOLOGUES: Isotopologue[] = [
   },
 ];
 
-// ---- Electronic states (for the dissociation scene) ---------------------
-// At large R the GROUND state X¹Σ⁺ correlates to He + H⁺ (closed-shell helium
-// keeps both electrons); the EXCITED state A¹Σ⁺ correlates to He⁺ + H. The two
-// diabatic characters swap through an avoided crossing near R ≈ 4 Å.
+// ---- Dissociation sketch -------------------------------------------------
+// At large R the ground X¹Σ+ surface correlates to He + H+; helium keeps both
+// electrons. The avoided crossing is a qualitative visual cue, not a fitted PES.
 export const AVOIDED_CROSSING_ANGSTROM = 3.9;
-
-export type ElectronicState = "X" | "A";
 
 // ---- Cosmic origin -------------------------------------------------------
 export const NGC_7027_DETECTION_YEAR = 2019;
 
 // ---- Literature comparison table (rendered in the Data & Methods drawer) -
 export const LITERATURE = [
-  { quantity: "Bond length rₑ", value: "0.7743 Å", source: "Pachucki 2012" },
-  { quantity: "Well depth Dₑ", value: "≈2.04 eV", source: "Stanke 2006" },
-  { quantity: "Dipole μₑ (c.o.m.)", value: "≈1.66 D", source: "Engel 2005" },
+  { quantity: "Bond length re", value: "0.7743 Å", source: "Pachucki 2012" },
+  { quantity: "Well depth De", value: "≈2.04 eV", source: "Stanke 2006" },
+  { quantity: "Dissociation D0", value: "1.845 eV", source: "Stanke 2006" },
   {
-    quantity: "Harmonic ωₑ",
+    quantity: "Dipole μe (c.o.m.)",
+    value: "≈1.66 D",
+    source: "Pavanello 2005",
+  },
+  {
+    quantity: "Harmonic ωe",
     value: "3228.3 cm⁻¹",
     source: "Bishop & Cheung 1979",
   },
+  { quantity: "Rotational Be", value: "33.526 cm⁻¹", source: "Müller/CDMS" },
 ] as const;
-
-// ---- Scene anchors (deep-link targets from the portfolio CTA) ------------
-export const SCENES = [
-  { id: "cosmos", label: "Origin" },
-  { id: "density", label: "Density skew" },
-  { id: "vibrational", label: "Vibration" },
-  { id: "dissociation", label: "Dissociation" },
-] as const;
-export type SceneId = (typeof SCENES)[number]["id"];
 
 // ---- Rendering ----------------------------------------------------------
 // Ångström → R3F scene units. Keeps the electron swarm, the nuclei, and the

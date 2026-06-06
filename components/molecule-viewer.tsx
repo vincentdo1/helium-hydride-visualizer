@@ -11,6 +11,7 @@ import { solveVibrational } from "@/lib/physics/dvr";
 import {
   AVOIDED_CROSSING_ANGSTROM,
   BOND_LENGTH_ANGSTROM,
+  DISSOCIATION_FROM_V0_EV,
   DIPOLE_MOMENT_DEBYE,
   DISSOCIATION_ENERGY_EV,
   ELECTRONS_ON_H,
@@ -90,9 +91,9 @@ export function MoleculeViewer() {
       : "drag to rotate · scroll to zoom · each dot is one |ψ|² sample";
 
   return (
-    <div className="relative flex h-[100dvh] w-full flex-col overflow-hidden lg:flex-row">
+    <div className="relative flex min-h-[100dvh] w-full flex-col bg-black lg:h-[100dvh] lg:overflow-hidden lg:flex-row">
       {/* ---------- 3D stage ---------- */}
-      <div className="relative order-1 min-h-[48vh] flex-1 lg:order-2">
+      <div className="relative order-1 h-[54svh] min-h-[340px] flex-none lg:order-2 lg:h-auto lg:min-h-0 lg:flex-1">
         <Starfield />
         <SceneCanvas>
           {mode === "formation" ? (
@@ -112,31 +113,32 @@ export function MoleculeViewer() {
 
         <Link
           href="/"
-          className="absolute left-4 top-4 z-10 inline-flex items-center gap-1.5 rounded border border-white/10 bg-black/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-white/60 backdrop-blur transition-colors hover:border-white/40 hover:text-white"
+          className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded border border-white/10 bg-black/50 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white/65 backdrop-blur transition-colors hover:border-white/40 hover:text-white sm:left-4 sm:top-4 sm:px-3 sm:tracking-[0.2em]"
         >
           <ArrowLeft className="h-3 w-3" />
           Story
         </Link>
 
-        <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-white/30">
+        <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 w-[min(92vw,720px)] -translate-x-1/2 px-3 text-center font-mono text-[9px] uppercase leading-relaxed tracking-[0.16em] text-white/35 sm:bottom-4 sm:text-[10px] sm:tracking-[0.25em]">
           {hint}
         </div>
       </div>
 
       {/* ---------- Sidebar instrument ---------- */}
-      <aside className="order-2 flex w-full flex-col gap-4 overflow-y-auto border-t border-white/10 bg-black/40 p-6 backdrop-blur lg:order-1 lg:w-[400px] lg:border-r lg:border-t-0">
+      <aside className="order-2 flex w-full flex-1 flex-col gap-4 border-t border-white/10 bg-black/45 p-4 backdrop-blur sm:p-6 lg:order-1 lg:w-[400px] lg:flex-none lg:overflow-y-auto lg:border-r lg:border-t-0 xl:w-[430px]">
         <header>
-          <div className="font-mono text-[11px] uppercase tracking-[0.4em] text-white/50">
+          <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/50 sm:text-[11px] sm:tracking-[0.4em]">
             Helium hydride
           </div>
-          <h1 className="mt-1 text-4xl font-semibold">HeH⁺</h1>
+          <h1 className="mt-1 text-3xl font-semibold sm:text-4xl">HeH⁺</h1>
           <p className="mt-3 text-sm leading-relaxed text-white/60">
-            The first molecule in the universe — helium bonded to hydrogen. The
-            white haze is its <strong className="text-white/85">electron
-            cloud</strong>: each dot marks one possible position of an electron,
-            sampled from the quantum probability |ψ|². You never see an
-            electron&apos;s path, only where it&apos;s likely to be — and it&apos;s
-            far more likely to be near helium.
+            The early universe&apos;s first molecular ion — helium bound to a
+            proton. The white haze is its{" "}
+            <strong className="text-white/85">electron cloud</strong>: each dot
+            marks one possible position of an electron, sampled from the quantum
+            probability |ψ|². You never see an electron&apos;s path, only where
+            it&apos;s likely to be — and it&apos;s far more likely to be near
+            helium.
           </p>
           <Legend />
         </header>
@@ -150,7 +152,7 @@ export function MoleculeViewer() {
                 <button
                   key={m.id}
                   onClick={() => setMode(m.id)}
-                  className={`rounded px-2 py-2 font-mono text-[11px] transition-colors ${
+                  className={`min-h-10 rounded px-2 py-2 font-mono text-[10px] transition-colors sm:text-[11px] ${
                     active
                       ? "bg-white text-black"
                       : "text-white/60 hover:bg-white/5 hover:text-white"
@@ -185,8 +187,8 @@ export function MoleculeViewer() {
         <MethodsAccordion />
 
         <p className="mt-auto pt-2 font-mono text-[10px] leading-relaxed text-white/25">
-          Live preview uses an analytical LCAO density. The offline PySCF/DVR
-          pipeline upgrades this to ab-initio FCI.
+          V1 uses a fast analytical density calibrated to literature constants,
+          not a shipped ab-initio density grid.
         </p>
       </aside>
     </div>
@@ -218,9 +220,11 @@ function Legend() {
 
 function Readout({ k, v }: { k: string; v: string }) {
   return (
-    <div className="flex items-baseline justify-between gap-3 border-t border-white/10 py-1.5 first:border-t-0">
-      <span className="text-xs text-white/55">{k}</span>
-      <span className="font-mono text-sm text-white/90">{v}</span>
+    <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-t border-white/10 py-1.5 first:border-t-0">
+      <span className="min-w-0 text-xs text-white/55">{k}</span>
+      <span className="min-w-0 text-right font-mono text-sm text-white/90">
+        {v}
+      </span>
     </div>
   );
 }
@@ -241,11 +245,7 @@ function FormationPanel({
   onReset: () => void;
 }) {
   const { R, bonded } = formation;
-  const status = bonded
-    ? "HeH⁺ formed"
-    : R <= 2.5
-      ? "Bonding…"
-      : "Apart";
+  const status = bonded ? "HeH⁺ formed" : R <= 2.5 ? "Bonding…" : "Apart";
   const e = morseEv(R);
 
   return (
@@ -253,11 +253,10 @@ function FormationPanel({
       <div className={`${panel} p-4`}>
         <div className={label}>Build it · He + H⁺ → HeH⁺ + γ</div>
         <p className="text-xs leading-relaxed text-white/60">
-          In the early universe, helium grabbed electrons first — so a neutral He
-          atom met a bare <strong className="text-white/85">proton</strong> and
-          the first chemical bond formed, radiating a photon (γ). Drag the two
-          together and watch helium&apos;s electron cloud reach out to capture the
-          proton.
+          In the early universe, neutral helium could meet a bare{" "}
+          <strong className="text-white/85">proton</strong>. A photon (γ)
+          carries away excess energy so the first molecular ion can remain
+          bound.
         </p>
         <div className="mt-3">
           <Readout k="Separation R" v={`${R.toFixed(2)} Å`} />
@@ -270,10 +269,11 @@ function FormationPanel({
         <WellPlot R={R} />
         {bonded && (
           <p className="mt-3 rounded bg-white/10 px-3 py-2 text-xs leading-relaxed text-white/80">
-            Bond formed — about{" "}
-            <strong>{DISSOCIATION_ENERGY_EV.toFixed(2)} eV</strong> released as a
-            photon. HeH⁺ is stable on its own; in space it&apos;s destroyed by
-            <em> reacting</em> (HeH⁺ + H → He + H₂⁺), not by falling apart.
+            Bond formed. The potential well is about{" "}
+            <strong>{DISSOCIATION_ENERGY_EV.toFixed(2)} eV</strong> deep; from
+            the ground rovibrational level, dissociation needs about{" "}
+            <strong>{DISSOCIATION_FROM_V0_EV.toFixed(3)} eV</strong>. In space,
+            HeH⁺ is mainly removed by reactions such as HeH⁺ + H → He + H₂⁺.
           </p>
         )}
       </div>
@@ -347,13 +347,13 @@ function DensityPanel() {
       <div className={label}>Equilibrium geometry · rₑ</div>
       <Readout k="Bond length rₑ" v={`${BOND_LENGTH_ANGSTROM.toFixed(4)} Å`} />
       <Readout k="Dipole μₑ (c.o.m.)" v={`${DIPOLE_MOMENT_DEBYE} D`} />
-      <Readout k="e⁻ on helium" v={`≈ ${ELECTRONS_ON_HE} e⁻`} />
-      <Readout k="e⁻ on hydrogen" v={`≈ ${ELECTRONS_ON_H} e⁻`} />
+      <Readout k="Model e⁻ weight near He" v={`≈ ${ELECTRONS_ON_HE} e⁻`} />
+      <Readout k="Model e⁻ weight near H" v={`≈ ${ELECTRONS_ON_H} e⁻`} />
       <p className="mt-3 text-xs leading-relaxed text-white/55">
-        The proton end carries the formal +1 charge, yet the cloud leans onto
-        helium — see how the white haze is denser around the cyan atom. That
-        imbalance is the permanent dipole (white arrow), pointing toward the
-        electron-poor H (δ+) end. It&apos;s what made HeH⁺ detectable in space.
+        The proton end carries the formal positive charge, while the electron
+        probability remains concentrated around helium. The permanent dipole is
+        why HeH⁺ has pure rotational lines, including the J = 1–0 transition
+        observed toward NGC 7027.
       </p>
     </div>
   );
@@ -418,7 +418,8 @@ function VibrationPanel({
         <PesPlot states={states} />
         <p className="mt-3 text-xs leading-relaxed text-white/55">
           Zero-point energy scales as √(k/μ). Heavier isotopologues breathe less
-          and sit lower — watch the molecule&apos;s oscillation shrink as μ grows.
+          and sit lower — watch the molecule&apos;s oscillation shrink as μ
+          grows.
         </p>
       </div>
     </div>
@@ -496,26 +497,30 @@ function MethodsAccordion() {
       {open && (
         <div className="border-t border-white/10 p-4">
           <p className="mb-3 text-xs leading-relaxed text-white/60">
-            HeH⁺ has only two electrons, so full configuration interaction is
-            exact within the basis and identical to CCSD — there are no triple
-            excitations. Rigour comes from basis quality (aug-cc-pV5Z / CBS) and
-            calibration to the non-Born–Oppenheimer literature.
+            The live cloud is an analytical, literature-calibrated LCAO sketch
+            of |ψ|². It is built for immediate, honest interaction; the
+            numerical anchors below come from spectroscopic and astrochemical
+            literature.
           </p>
-          <table className="w-full border-collapse text-xs">
-            <tbody>
-              {LITERATURE.map((row) => (
-                <tr key={row.quantity} className="border-t border-white/10">
-                  <td className="py-1.5 pr-2 text-white/60">{row.quantity}</td>
-                  <td className="py-1.5 pr-2 font-mono text-white/90">
-                    {row.value}
-                  </td>
-                  <td className="py-1.5 text-right font-mono text-[10px] text-white/40">
-                    {row.source}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[320px] border-collapse text-xs">
+              <tbody>
+                {LITERATURE.map((row) => (
+                  <tr key={row.quantity} className="border-t border-white/10">
+                    <td className="py-1.5 pr-2 text-white/60">
+                      {row.quantity}
+                    </td>
+                    <td className="py-1.5 pr-2 font-mono text-white/90">
+                      {row.value}
+                    </td>
+                    <td className="py-1.5 text-right font-mono text-[10px] text-white/40">
+                      {row.source}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <p className="mt-3 text-[11px] leading-relaxed text-white/45">
             <span className="text-white/70">Honest framing:</span> the dots are
             Monte-Carlo samples of the probability density |ψ|², not electron

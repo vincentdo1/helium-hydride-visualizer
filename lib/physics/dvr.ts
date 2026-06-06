@@ -1,9 +1,8 @@
 // Vibrational eigenstates on a 1D potential via sinc-DVR (Colbert–Miller).
 //
-// SKELETON: this implements the kinetic-energy matrix and a harmonic fallback
-// potential so the vibrational scene renders real, mass-dependent wavefunctions
-// immediately. Swap `harmonicPotential` for the interpolated FCI potential curve
-// (loaded from data/pes/*.json by lib/data-loader.ts) for production accuracy.
+// V1 uses the kinetic-energy matrix with a harmonic potential anchored to the
+// literature frequency, so the isotope controls render real, mass-dependent
+// wavefunctions immediately.
 //
 // Colbert & Miller (1992) J. Chem. Phys. 96, 1982 — DVR on [−∞,∞].
 
@@ -44,7 +43,7 @@ function harmonicPotential(R: number): number {
 // Solve the lowest `nStates` vibrational levels for a given reduced mass.
 // `potential` is the Born–Oppenheimer PES V(R) in Joules (mass-independent — the
 // same curve for every isotopologue); it defaults to the harmonic placeholder.
-// Pass an interpolated FCI curve (R in Å → V in Joules) once real data is wired in.
+// A future data-backed version can pass an interpolated ab-initio curve here.
 export function solveVibrational(
   reducedMassAmu: number,
   nStates = 4,
