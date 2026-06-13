@@ -11,9 +11,7 @@
 }
 
 :root {
-  /* Black-and-white "space" identity. The UI is monochrome; the only colour in
-     the whole experience is the two atoms (cyan He / amber H), so they read like
-     coloured stars against the void. Accent (--primary) is near-white. */
+  /* Monochrome UI; the only colour is the two atoms (cyan He / amber H). */
   --background: oklch(0.04 0 0);
   --foreground: oklch(0.97 0 0);
   --primary: oklch(0.97 0 0);
@@ -38,8 +36,7 @@ body {
   font-family: var(--font-mono);
 }
 
-/* Each scene is a full-viewport scroll section with an id used for deep-links
-   (#cosmos / #density / #vibrational / #dissociation) coming from the portfolio. */
+/* Full-viewport scroll sections; ids are deep-link targets. */
 .scene {
   position: relative;
   min-height: 100dvh;

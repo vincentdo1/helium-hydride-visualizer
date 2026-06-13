@@ -6,10 +6,8 @@ import { OrbitControls, Stars } from "@react-three/drei";
 import { ACESFilmicToneMapping } from "three";
 import { SceneEffects } from "@/components/viz/fx";
 
-// Shared R3F canvas for the 3D scenes. Sets up filmic tone-mapping (so the
-// emissive cores roll off nicely instead of clipping), a deep 3D starfield for
-// parallax depth, gentle auto-rotation for life, and the shared bloom/vignette
-// post stack. Children are the scene contents.
+// Shared R3F canvas: filmic tone-mapping, starfield, orbit controls, and the
+// bloom/vignette post stack. Children are the scene contents.
 export function SceneCanvas({
   children,
   enableZoom = true,
@@ -31,14 +29,12 @@ export function SceneCanvas({
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
-        // Lets the framebuffer be read back (screenshots / pixel checks) even
-        // though the swarm animates every frame. Negligible cost here.
-        preserveDrawingBuffer: true,
+        preserveDrawingBuffer: true, // allows framebuffer readback
         toneMapping: ACESFilmicToneMapping,
         toneMappingExposure: 1.15,
       }}
     >
-      {/* soft key + cool rim, low ambient so the glow reads against the dark */}
+      {/* soft key + cool rim, low ambient */}
       <ambientLight intensity={0.35} />
       <directionalLight position={[3, 4, 5]} intensity={1.1} />
       <directionalLight
@@ -59,16 +55,13 @@ export function SceneCanvas({
 
       <Suspense fallback={null}>{children}</Suspense>
 
-      {/* Viewer-style controls: left-drag rotate, right-drag pan, wheel zoom
-          (OrbitControls' default mouse mapping — the user drives it, no
-          auto-spin). */}
       <OrbitControls
         makeDefault
         enablePan={enablePan}
         enableZoom={enableZoom}
         autoRotate={autoRotate}
         autoRotateSpeed={0.45}
-        minDistance={1.8}
+        minDistance={1.3}
         maxDistance={7}
         dampingFactor={0.08}
       />

@@ -6,24 +6,24 @@ import { NGC_7027_DETECTION_YEAR } from "@/lib/constants";
 
 const beats = [
   {
-    k: "recombination",
-    title: "The universe cools",
-    body: "During recombination, the young universe cooled through a few thousand kelvin. Light-element ions and free electrons began settling into neutral atoms.",
-  },
-  {
-    k: "helium-first",
-    title: "Helium recombines first",
-    body: "Because helium ions have higher ionization potentials than hydrogen, helium became neutral first while many protons (H⁺) remained available.",
+    k: "cooling",
+    title: "The fire dims",
+    body: "380,000 years after the Big Bang, the universe finally cooled enough for atoms. Helium, holding its electrons tightest, got there first — drifting neutral through a sea of bare protons.",
   },
   {
     k: "formation",
     title: "He + H⁺ → HeH⁺ + γ",
-    body: "Neutral helium could then bind with a proton by radiative association. The photon carries away excess energy, leaving the helium hydride ion.",
+    body: "Then it happened: a helium atom caught a proton, flung out a photon, and held on. The first chemical bond in existence.",
+  },
+  {
+    k: "acid",
+    title: "The strongest acid there is",
+    body: "Helium wants nothing to do with that proton. HeH⁺ will force it onto any molecule it meets — no acid on Earth comes close.",
   },
   {
     k: "detection",
-    title: `Found at last — ${NGC_7027_DETECTION_YEAR}`,
-    body: "Predicted for decades, HeH⁺ was detected astrophysically in NGC 7027 with SOFIA/upGREAT through its J = 1–0 rotational line at 149.1 µm.",
+    title: `Found, ${NGC_7027_DETECTION_YEAR}`,
+    body: "Made in a lab in 1925, hunted in space for decades — and finally spotted glowing in the nebula NGC 7027, just a few years ago.",
   },
 ];
 
@@ -65,8 +65,7 @@ export function CosmicOrigin() {
           in the universe
         </h1>
         <p className="mx-auto mt-5 max-w-[21rem] text-white/55 sm:max-w-md">
-          Scroll to trace its story — from the recombination epoch to its 2019
-          detection — then explore its behavior in 3D.
+          Scroll through its story, then hold it in your hands in 3D.
         </p>
       </div>
 

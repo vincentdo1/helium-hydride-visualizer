@@ -1,18 +1,6 @@
-// Electron "swarm" — a live point cloud sampled from |ψ|² for HeH⁺.
-//
-// HeH⁺ has exactly TWO electrons. Rather than fake Bohr-style orbits (which are
-// physically wrong), we draw a cloud of probe points distributed according to a
-// real electron density ρ(r) = |ψ|², evolved by a Metropolis random walk. Each
-// point is an honest Monte-Carlo sample of "where an electron is likely to be"
-// — so the cloud crowds wherever the density is high. For the bonded molecule
-// that means it piles onto helium; during formation it starts on the lone He
-// atom and grows toward the incoming proton as the bond forms.
-//
-// This is a probability-density visualisation, not a trajectory: the points do
-// not trace electron paths (a stationary real eigenstate carries no current).
-//
-// The walker is density-agnostic: callers pass any ρ(x,y,z) (see
-// lib/physics/density.ts → makeHehDensity), so the same swarm drives every mode.
+// Electron swarm: a point cloud sampled from |ψ|² by a Metropolis walk.
+// Points are probability-density samples, not trajectories. Density-agnostic —
+// callers pass any ρ(x,y,z), so the same walker drives every mode.
 
 import type { DensityFn, Vec3 } from "@/lib/physics/density";
 
@@ -46,8 +34,7 @@ function gaussian(): number {
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
 }
 
-// Seed the cloud from the weighted gaussian seeds, then run a few equilibration
-// sweeps so it already sits on ρ before the first frame is drawn.
+// Seed from weighted gaussians, then equilibrate a few sweeps before frame 1.
 export function createSwarm(
   count: number,
   seeds: SwarmSeed[],
@@ -84,11 +71,8 @@ export function createSwarm(
   return s;
 }
 
-// One (or more) Metropolis sweeps in place against the supplied density. Propose
-// a small Gaussian hop per point; accept with probability min(1, ρ_new/ρ_old).
-// The stationary distribution is exactly ρ ∝ |ψ|². The density may change
-// between frames (formation drag / dissociation scrub / vibration) — the walk
-// simply re-equilibrates toward the new target.
+// In-place Metropolis sweeps: gaussian hop, accept with min(1, ρ_new/ρ_old).
+// If the density changes between frames the walk re-equilibrates toward it.
 export function stepSwarm(
   s: SwarmState,
   density: DensityFn,

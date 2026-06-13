@@ -1,6 +1,4 @@
-// Literature-backed constants and display anchors for helium hydride (HeH+).
-// The live V1 viewer is an educational analytical model, so these values are
-// used to keep the visual story calibrated to the spectroscopic literature.
+// Physical constants and display anchors for helium hydride (HeH+).
 //
 // References
 //   - Bishop & Cheung (1979)  J. Mol. Spectrosc. 75, 462.  ωe, Be, anharmonicity
@@ -21,8 +19,7 @@ export const HARMONIC_FREQUENCY_CM = 3228.3; // ωe
 export const ROT_CONSTANT_CM = 33.526; // Be
 
 // ---- Electron partition --------------------------------------------------
-// Approximate display readout from the toy LCAO density. The robust claim is
-// qualitative: both electrons are mostly centered near the helium nucleus.
+// Approximate Mulliken-style populations, for display.
 export const TOTAL_ELECTRONS = 2;
 export const ELECTRONS_ON_HE = 1.7;
 export const ELECTRONS_ON_H = 0.3;
@@ -34,9 +31,8 @@ export const C_CM = 2.99792458e10; // speed of light, cm/s (for cm⁻¹ conversi
 export const BOHR_TO_ANGSTROM = 0.529177210903;
 
 // ---- Isotopologues -------------------------------------------------------
-// Atomic masses (amu, AME2020). Reduced mass μ = (mA·mB)/(mA+mB) sets the
-// vibrational scaling: ZPE ≈ ωe/2 ∝ √(k/μ).
-const M_HE4 = 4.002602;
+// Atomic masses (amu, AME2020). μ = (mA·mB)/(mA+mB) sets ZPE ≈ ωe/2 ∝ √(k/μ).
+export const M_HE4 = 4.002602;
 const M_HE3 = 3.016029;
 const M_H = 1.007825;
 const M_D = 2.014102;
@@ -76,8 +72,7 @@ export const ISOTOPOLOGUES: Isotopologue[] = [
 ];
 
 // ---- Dissociation sketch -------------------------------------------------
-// At large R the ground X¹Σ+ surface correlates to He + H+; helium keeps both
-// electrons. The avoided crossing is a qualitative visual cue, not a fitted PES.
+// Ground X¹Σ+ correlates to He + H+ at large R. Qualitative cue, not a fitted PES.
 export const AVOIDED_CROSSING_ANGSTROM = 3.9;
 
 // ---- Cosmic origin -------------------------------------------------------
@@ -102,22 +97,17 @@ export const LITERATURE = [
 ] as const;
 
 // ---- Rendering ----------------------------------------------------------
-// Ångström → R3F scene units. Keeps the electron swarm, the nuclei, and the
-// (legacy) volume cube aligned in the same coordinate frame:
-//   = volumeSize / (2 · extent) = 2.4 / 6.0
+// Ångström → scene units.
 export const ANGSTROM_TO_SCENE = 0.4;
 
-// Atom accent colours — the ONLY colour in the otherwise black/white "space" UI.
-// Single source of truth shared by the CSS theme (--he / --h in globals.css) and
-// the three.js materials. He = cyan (electron-rich δ−); H = amber (δ+).
+// Atom accent colours, mirrored as --he / --h in globals.css.
 export const HE_COLOR_HEX = "#22d3ee";
 export const HE_CORE_HEX = "#a5f3fc";
 export const H_COLOR_HEX = "#f59e0b";
 export const H_CORE_HEX = "#fde68a";
 export const SWARM_COLOR_HEX = "#ffffff";
 
-// Viewer modes for the single persistent molecule instrument (/molecule).
-// Ordered as a story arc: build it → inspect it → watch it breathe → break it.
+// Viewer modes for /molecule.
 export const VIEWER_MODES = [
   { id: "formation", label: "Formation" },
   { id: "density", label: "Density skew" },

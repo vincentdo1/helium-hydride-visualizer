@@ -21,8 +21,12 @@ import {
   type Points,
 } from "three";
 import { createSwarm, stepSwarm, type SwarmState } from "@/lib/physics/swarm";
-import { makeHehDensity, type Vec3 } from "@/lib/physics/density";
-import { Atom, SoftPoints } from "@/components/viz/primitives";
+import {
+  bondCharacter,
+  makeHehDensity,
+  type Vec3,
+} from "@/lib/physics/density";
+import { Atom, AtomLabel, SoftPoints } from "@/components/viz/primitives";
 import {
   ANGSTROM_TO_SCENE,
   BOND_LENGTH_ANGSTROM,
@@ -35,19 +39,15 @@ import {
 
 const S = ANGSTROM_TO_SCENE;
 const RE = BOND_LENGTH_ANGSTROM; // equilibrium bond length, Å
-const R_OVERLAP = 2.5; // beyond this the proton is bare (no shared cloud)
-const C_MAX = 0.3; // bonded He/H mixing coefficient
 const R_BOND = 1.15; // separation at which the bond "clicks" closed, Å
 const R_BREAK = 1.8; // pull past this and the bond is considered broken, Å
 const START = 2.1; // initial half-separation on reset, Å
 
-// He/H coefficient grows as the atoms approach: 0 when far (lone He + bare
-// proton), → C_MAX at rₑ. A linear ramp in the overlap window reads well.
-function bondCharacter(R: number): number {
-  if (R >= R_OVERLAP) return 0;
-  if (R <= RE) return C_MAX;
-  return (C_MAX * (R_OVERLAP - R)) / (R_OVERLAP - RE);
-}
+// Per-point tint (matches heh-molecule).
+const HE_TINT = [0.45, 0.88, 1.0];
+const H_TINT = [1.0, 0.75, 0.42];
+const SIGMA2_HE = 0.2; // Å²
+const SIGMA2_H = 0.15;
 
 export type FormationMoleculeProps = {
   onChange: (s: { R: number; bonded: boolean }) => void;
@@ -55,11 +55,9 @@ export type FormationMoleculeProps = {
   count?: number;
 };
 
-// Drag a helium atom and a bare proton (H⁺) together to assemble HeH⁺.
-//   He + H⁺ → HeH⁺ + γ
-// The shared electron cloud starts wholly on He, then grows a bond toward the
-// proton as it approaches; at rₑ the bond clicks closed and a photon flies off
-// (the binding energy radiated away). Pull them back apart to reverse it.
+// Drag He and a bare proton together to form HeH⁺ (He + H⁺ → HeH⁺ + γ).
+// The cloud starts on He and grows toward the proton; at rₑ the bond clicks
+// closed and a photon carries the binding energy away.
 export function FormationMolecule({
   onChange,
   resetSignal,
@@ -211,7 +209,9 @@ export function FormationMolecule({
     const points = pointsRef.current;
     if (!points) return;
     const posAttr = points.geometry.attributes.position;
+    const colAttr = points.geometry.attributes.aColor;
     const arr = posAttr.array as Float32Array;
+    const cols = colAttr.array as Float32Array;
 
     let R = hePos.current.distanceTo(hPos.current);
 
@@ -238,11 +238,27 @@ export function FormationMolecule({
     const src = swarm.posA;
     for (let i = 0; i < count; i++) {
       const ix = i * 3;
-      arr[ix] = src[ix] * S;
-      arr[ix + 1] = src[ix + 1] * S;
-      arr[ix + 2] = src[ix + 2] * S;
+      const x = src[ix];
+      const y = src[ix + 1];
+      const z = src[ix + 2];
+      arr[ix] = x * S;
+      arr[ix + 1] = y * S;
+      arr[ix + 2] = z * S;
+
+      const dhx = x - he[0];
+      const dhy = y - he[1];
+      const dhz = z - he[2];
+      const dpx = x - h[0];
+      const dpy = y - h[1];
+      const dpz = z - h[2];
+      const tHe = Math.exp(-(dhx * dhx + dhy * dhy + dhz * dhz) / SIGMA2_HE);
+      const tH = Math.exp(-(dpx * dpx + dpy * dpy + dpz * dpz) / SIGMA2_H);
+      cols[ix] = 1 + tHe * (HE_TINT[0] - 1) + tH * (H_TINT[0] - 1);
+      cols[ix + 1] = 1 + tHe * (HE_TINT[1] - 1) + tH * (H_TINT[1] - 1);
+      cols[ix + 2] = 1 + tHe * (HE_TINT[2] - 1) + tH * (H_TINT[2] - 1);
     }
     posAttr.needsUpdate = true;
+    colAttr.needsUpdate = true;
 
     // Atoms.
     if (heGroup.current)
@@ -296,7 +312,11 @@ export function FormationMolecule({
         photonMesh.visible = true;
         tmp.copy(ph.mid).addScaledVector(ph.dir, 0.5 + t * 3.2);
         photonMesh.position.set(tmp.x * S, tmp.y * S, tmp.z * S);
-        photonMesh.scale.setScalar(0.07 * (1 - 0.4 * k));
+        // stretched along the flight direction so it reads as a ray
+        quat.setFromUnitVectors(UP, ph.dir);
+        photonMesh.quaternion.copy(quat);
+        const ps = 1 - 0.4 * k;
+        photonMesh.scale.set(0.04 * ps, 0.2 * ps, 0.04 * ps);
         (photonMesh.material as MeshBasicMaterial).opacity = Math.max(0, 1 - k);
 
         flashMesh.visible = true;
@@ -337,7 +357,7 @@ export function FormationMolecule({
         opacity={0.42}
       />
 
-      {/* Helium atom — draggable (cyan, electron-rich) */}
+      {/* Helium atom — draggable */}
       <group
         ref={heGroup}
         userData={{ atom: "he" }}
@@ -346,17 +366,18 @@ export function FormationMolecule({
         onPointerOut={onUnhover}
       >
         <Atom
-          radius={0.09}
+          radius={0.1}
           color={HE_COLOR_HEX}
           coreColor={HE_CORE_HEX}
           grab
           pulse
           beacon
-          haloScale={2.4}
+          haloScale={2.6}
         />
+        <AtomLabel text="He" color={HE_COLOR_HEX} position={[0, 0.34, 0]} />
       </group>
 
-      {/* Bare proton — draggable (amber, no electron cloud of its own) */}
+      {/* Bare proton — draggable */}
       <group
         ref={hGroup}
         userData={{ atom: "h" }}
@@ -365,12 +386,15 @@ export function FormationMolecule({
         onPointerOut={onUnhover}
       >
         <Atom
-          radius={0.052}
+          radius={0.06}
           color={H_COLOR_HEX}
           coreColor={H_CORE_HEX}
           grab
           pulse
+          beacon
+          beaconOpacity={0.26}
         />
+        <AtomLabel text="H⁺" color={H_COLOR_HEX} position={[0, 0.27, 0]} />
       </group>
 
       {/* Bond along the dynamic axis */}

@@ -2,10 +2,8 @@
 
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 
-// Post-processing stack shared by every scene. Selective bloom is what turns the
-// flat dots + spheres into a luminous, cinematic molecule: emissive atom cores
-// and the additive electron gas glow, while MSAA keeps the sphere edges clean
-// and a soft vignette focuses the eye on the centre.
+// Shared post stack: bloom for the emissive cores and additive cloud, vignette
+// to pull the eye centre-frame.
 export function SceneEffects({
   bloomIntensity = 0.9,
 }: {
@@ -16,7 +14,7 @@ export function SceneEffects({
       <Bloom
         mipmapBlur
         intensity={bloomIntensity}
-        luminanceThreshold={0.22}
+        luminanceThreshold={0.18}
         luminanceSmoothing={0.4}
         radius={0.78}
       />

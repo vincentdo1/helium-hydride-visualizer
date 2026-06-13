@@ -1,10 +1,6 @@
-// Vibrational eigenstates on a 1D potential via sinc-DVR (Colbert–Miller).
-//
-// V1 uses the kinetic-energy matrix with a harmonic potential anchored to the
-// literature frequency, so the isotope controls render real, mass-dependent
-// wavefunctions immediately.
-//
+// Vibrational eigenstates on a 1D potential via sinc-DVR.
 // Colbert & Miller (1992) J. Chem. Phys. 96, 1982 — DVR on [−∞,∞].
+// Default potential: harmonic, anchored to the literature ωe.
 
 import {
   AMU_TO_KG,
@@ -22,14 +18,9 @@ export type VibrationalState = {
   psi: Float32Array; // normalised wavefunction on the grid
 };
 
-// Harmonic placeholder potential V(R) in Joules, minimum at re.
-// The force constant k is a property of the electronic PES and is therefore
-// MASS-INDEPENDENT (Born–Oppenheimer). We pin it to ωe of the reference
-// isotopologue (⁴HeH⁺): k = μ_ref·ω². Heavier isotopologues then get a smaller
-// vibrational frequency ω = √(k/μ) purely from the μ-dependent kinetic term in
-// the DVR — so the ladder compresses and the ZPE drops with mass, which is the
-// whole point of the isotope view. (Using the per-isotope μ here instead would
-// cancel that effect and give every isotopologue the same ωe — wrong.)
+// Harmonic V(R) in Joules, minimum at re. The force constant belongs to the
+// electronic PES, so it is mass-independent: pin k = μ_ref·ω² to the reference
+// isotopologue and let the μ-dependent kinetic term produce the isotope shifts.
 const FORCE_CONSTANT_N_PER_M =
   MU_REF_AMU *
   AMU_TO_KG *
@@ -40,10 +31,8 @@ function harmonicPotential(R: number): number {
   return 0.5 * FORCE_CONSTANT_N_PER_M * dRm * dRm;
 }
 
-// Solve the lowest `nStates` vibrational levels for a given reduced mass.
-// `potential` is the Born–Oppenheimer PES V(R) in Joules (mass-independent — the
-// same curve for every isotopologue); it defaults to the harmonic placeholder.
-// A future data-backed version can pass an interpolated ab-initio curve here.
+// Lowest `nStates` vibrational levels for a given reduced mass. `potential` is
+// the BO curve V(R) in Joules (same curve for every isotopologue).
 export function solveVibrational(
   reducedMassAmu: number,
   nStates = 4,
@@ -114,11 +103,8 @@ function jacobiEigen(input: number[][]): {
     Array.from({ length: n }, (_, j) => (i === j ? 1 : 0)),
   );
 
-  // Convergence is judged RELATIVE to the matrix magnitude. The Hamiltonian is
-  // in Joules (entries ~1e-19), so an absolute threshold like 1e-20 would be
-  // satisfied before any rotation runs — returning the un-diagonalised diagonal
-  // (this was a real bug: it made every vibrational spacing collapse to ~tens of
-  // cm⁻¹). Scaling by the Frobenius norm makes the test resolution-independent.
+  // Tolerances must be relative to the matrix magnitude: entries are in Joules
+  // (~1e-19), so any absolute threshold would pass before a single rotation.
   let scale = 0;
   for (let i = 0; i < n; i++)
     for (let j = 0; j < n; j++) scale += a[i][j] * a[i][j];

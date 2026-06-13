@@ -19,6 +19,7 @@ import {
   HARMONIC_FREQUENCY_CM,
   ISOTOPOLOGUES,
   LITERATURE,
+  M_HE4,
   VIEWER_MODES,
   type ViewerMode,
 } from "@/lib/constants";
@@ -27,8 +28,7 @@ const panel = "rounded-md border border-white/10 bg-white/[0.03] backdrop-blur";
 const label =
   "font-mono text-[10px] uppercase tracking-[0.2em] text-white/45 mb-2";
 
-// Map portfolio deep-link hashes onto viewer modes so existing CTAs keep working
-// after the scene-nav was removed.
+// Map portfolio deep-link hashes onto viewer modes.
 function hashToMode(hash: string): ViewerMode | null {
   const h = hash.replace("#", "");
   if (h === "formation") return "formation";
@@ -106,6 +106,7 @@ export function MoleculeViewer() {
               mode={mode}
               bondLengthA={sceneBond}
               amplitudeA={amplitudeA}
+              heMassShare={iso.reducedMass / M_HE4}
               showDipole={mode === "density"}
             />
           )}
@@ -132,15 +133,14 @@ export function MoleculeViewer() {
           </div>
           <h1 className="mt-1 text-3xl font-semibold sm:text-4xl">HeH⁺</h1>
           <p className="mt-3 text-sm leading-relaxed text-white/60">
-            The early universe&apos;s first molecular ion — helium bound to a
-            proton. The white haze is its{" "}
-            <strong className="text-white/85">electron cloud</strong>: each dot
-            marks one possible position of an electron, sampled from the quantum
-            probability |ψ|². You never see an electron&apos;s path, only where
-            it&apos;s likely to be — and it&apos;s far more likely to be near
-            helium.
+            The first molecule the universe ever made: helium holding a single
+            proton. The haze is its{" "}
+            <strong className="text-white/85">electron cloud</strong> — each
+            dot one place an electron is likely to be — and almost all of it
+            hugs the helium.
           </p>
           <Legend />
+          <Facts />
         </header>
 
         {/* Mode tabs (2×2) */}
@@ -185,11 +185,6 @@ export function MoleculeViewer() {
         )}
 
         <MethodsAccordion />
-
-        <p className="mt-auto pt-2 font-mono text-[10px] leading-relaxed text-white/25">
-          V1 uses a fast analytical density calibrated to literature constants,
-          not a shipped ab-initio density grid.
-        </p>
       </aside>
     </div>
   );
@@ -214,6 +209,31 @@ function Legend() {
         />
         H · electron-poor δ+
       </span>
+    </div>
+  );
+}
+
+function Facts() {
+  const facts = [
+    { k: "Born", v: "≈380,000 yr after the Big Bang" },
+    { k: "Found", v: "2019 · nebula NGC 7027" },
+    { k: "Acidity", v: "strongest acid known" },
+  ];
+  return (
+    <div className="mt-4 grid grid-cols-3 gap-1.5">
+      {facts.map((f) => (
+        <div
+          key={f.k}
+          className="rounded border border-white/10 bg-white/[0.02] px-2 py-2"
+        >
+          <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/35">
+            {f.k}
+          </div>
+          <div className="mt-1 text-[11px] leading-snug text-white/70">
+            {f.v}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -253,10 +273,9 @@ function FormationPanel({
       <div className={`${panel} p-4`}>
         <div className={label}>Build it · He + H⁺ → HeH⁺ + γ</div>
         <p className="text-xs leading-relaxed text-white/60">
-          In the early universe, neutral helium could meet a bare{" "}
-          <strong className="text-white/85">proton</strong>. A photon (γ)
-          carries away excess energy so the first molecular ion can remain
-          bound.
+          Drag them together. When helium meets a bare proton, a photon (γ)
+          carries the spare energy away — and the universe has its first
+          molecule.
         </p>
         <div className="mt-3">
           <Readout k="Separation R" v={`${R.toFixed(2)} Å`} />
@@ -269,11 +288,10 @@ function FormationPanel({
         <WellPlot R={R} />
         {bonded && (
           <p className="mt-3 rounded bg-white/10 px-3 py-2 text-xs leading-relaxed text-white/80">
-            Bond formed. The potential well is about{" "}
-            <strong>{DISSOCIATION_ENERGY_EV.toFixed(2)} eV</strong> deep; from
-            the ground rovibrational level, dissociation needs about{" "}
-            <strong>{DISSOCIATION_FROM_V0_EV.toFixed(3)} eV</strong>. In space,
-            HeH⁺ is mainly removed by reactions such as HeH⁺ + H → He + H₂⁺.
+            Bonded — a well{" "}
+            <strong>{DISSOCIATION_ENERGY_EV.toFixed(2)} eV</strong> deep,{" "}
+            <strong>{DISSOCIATION_FROM_V0_EV.toFixed(3)} eV</strong> to escape
+            from the ground state. Fierce for something born in a vacuum.
           </p>
         )}
       </div>
@@ -350,10 +368,9 @@ function DensityPanel() {
       <Readout k="Model e⁻ weight near He" v={`≈ ${ELECTRONS_ON_HE} e⁻`} />
       <Readout k="Model e⁻ weight near H" v={`≈ ${ELECTRONS_ON_H} e⁻`} />
       <p className="mt-3 text-xs leading-relaxed text-white/55">
-        The proton end carries the formal positive charge, while the electron
-        probability remains concentrated around helium. The permanent dipole is
-        why HeH⁺ has pure rotational lines, including the J = 1–0 transition
-        observed toward NGC 7027.
+        Helium hoards both electrons; the proton rides along nearly bare. That
+        lopsidedness gives HeH⁺ a strong dipole — the radio signature that
+        finally gave it away in 2019.
       </p>
     </div>
   );
@@ -383,8 +400,9 @@ function DissociationPanel({
           </div>
         )}
         <p className="mt-3 text-xs leading-relaxed text-white/55">
-          Stretch the bond and closed-shell helium keeps both electrons — the
-          cloud collapses onto He, leaving a bare proton (H⁺) drifting off.
+          Pull, and helium keeps everything. The cloud snaps back onto He and a
+          bare proton drifts away — this is why HeH⁺ is the strongest acid
+          known: it will hand that proton to any molecule it touches.
         </p>
       </div>
     </div>
@@ -417,9 +435,9 @@ function VibrationPanel({
         />
         <PesPlot states={states} />
         <p className="mt-3 text-xs leading-relaxed text-white/55">
-          Zero-point energy scales as √(k/μ). Heavier isotopologues breathe less
-          and sit lower — watch the molecule&apos;s oscillation shrink as μ
-          grows.
+          Even at absolute zero it can&apos;t hold still. Swap in heavier
+          partners and the breathing slows and shrinks — the proton does almost
+          all the moving. (Motion exaggerated for visibility.)
         </p>
       </div>
     </div>
@@ -497,9 +515,8 @@ function MethodsAccordion() {
       {open && (
         <div className="border-t border-white/10 p-4">
           <p className="mb-3 text-xs leading-relaxed text-white/60">
-            The live cloud is an analytical, literature-calibrated LCAO sketch
-            of |ψ|². It is built for immediate, honest interaction; the
-            numerical anchors below come from spectroscopic and astrochemical
+            The live cloud is an analytical LCAO model of |ψ|², sampled by a
+            Metropolis walk. The anchors below come from the spectroscopic
             literature.
           </p>
           <div className="overflow-x-auto">
@@ -522,9 +539,9 @@ function MethodsAccordion() {
             </table>
           </div>
           <p className="mt-3 text-[11px] leading-relaxed text-white/45">
-            <span className="text-white/70">Honest framing:</span> the dots are
-            Monte-Carlo samples of the probability density |ψ|², not electron
-            trajectories — a stationary real eigenstate carries no current.
+            The dots are Monte-Carlo samples of the probability density |ψ|²,
+            not electron trajectories — a stationary eigenstate carries no
+            current.
           </p>
         </div>
       )}

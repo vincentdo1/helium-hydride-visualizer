@@ -33,7 +33,7 @@ export function SceneHost() {
 
       <CosmicOrigin />
 
-      {/* Closing CTA — the doorway into the instrument */}
+      {/* Closing CTA */}
       <section className="flex min-h-[70vh] flex-col items-center justify-center px-5 text-center sm:px-6">
         <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[var(--primary)] sm:text-[11px] sm:tracking-[0.4em]">
           Now explore it in 3D
@@ -42,8 +42,7 @@ export function SceneHost() {
           Step inside the molecule
         </h2>
         <p className="mt-4 max-w-md text-white/55">
-          See the electron probability cloud crowd toward helium, breathe with
-          isotope mass, and collapse back to He as the bond stretches.
+          Drag it together, watch it breathe, stretch it until it snaps.
         </p>
         <Link
           href="/molecule"

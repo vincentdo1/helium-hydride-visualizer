@@ -1,25 +1,12 @@
-// Analytical electron-density sketch for HeH⁺.
+// Analytical LCAO electron density for HeH⁺.
 //
-// This is a fast LCAO-of-Slater-type-orbitals model used by the interactive
-// swarm. It is calibrated for visual honesty and speed, not claimed as an
-// ab-initio density grid.
+//   ρ(r) = | c_He·χ_He(r−R_He) + c_H·χ_H(r−R_H) |²
+//   χ(r) = √(ζ³/π)·exp(−ζ·|r|)   (normalised 1s Slater; ζ in Å⁻¹)
 //
-// Model: ρ(r) = | c_He·χ_He(r−R_He) + c_H·χ_H(r−R_H) |²
-//   χ(r) = √(ζ³/π)·exp(−ζ·|r|)      (NORMALISED 1s Slater orbital)
-//   ζ in Å⁻¹: ζ_He ≈ 3.19 (He 1s is compact: Z_eff/a₀ ≈ 1.69/0.529), ζ_H ≈ 1.9.
-// The bonding MO is strongly polarised toward He (c_H/c_He ≈ 0.3). This produces
-// a clear visible skew: ≈1.6 e⁻ sit in the He half-space, ≈0.4 e⁻ in the H
-// half-space (verified by numerical integration on a 140³ grid).
-//
-// NB this *spatial half-space* partition is a different measure from the ≈1.7 /
-// 0.3 e⁻ MULLIKEN population quoted in constants.ts (which assigns basis-function
-// density to atoms). Both express the same physics — electrons pile onto He —
-// but they are not the same number and we do not claim they are.
-//
-// The model is parametrised by the He/H coefficient c_H so the SAME function can
-// describe both a bonded HeH⁺ (c_H ≈ 0.3) and the formation process, where two
-// atoms approach from afar: a neutral He cloud (c_H = 0, all density on He) that
-// grows a bond toward an incoming proton as overlap increases (c_H → 0.3).
+// c_H parametrises bond character: 0 = lone He cloud, ≈0.3 = bonded HeH⁺
+// (strongly polarised toward He). Fast enough to sample live; not an
+// ab-initio grid. Note the spatial half-space split (~1.6/0.4 e⁻) is a
+// different measure from the Mulliken populations in constants.ts.
 
 import { BOND_LENGTH_ANGSTROM } from "@/lib/constants";
 
@@ -37,13 +24,24 @@ export function nucleiPositions(bondLengthA = BOND_LENGTH_ANGSTROM): {
   return { he: [-half, 0, 0], h: [half, 0, 0] };
 }
 
-// Effective Slater exponents in INVERSE ÅNGSTRÖM (see header).
+// Effective Slater exponents, Å⁻¹.
 const ZETA_HE = 3.19;
 const ZETA_H = 1.9;
-// Default LCAO weights for the bonded molecule. Only the ratio matters (density
-// is renormalised downstream). Tuned so the cloud sits ≈1.6 e⁻ / 0.4 e⁻ on He.
+// Bonded LCAO weights; only the ratio matters (renormalised downstream).
 const C_HE = 1.0;
 const C_H_BONDED = 0.3;
+
+// He/H mixing vs separation: full bond character at re, fading to a lone He
+// cloud once orbital overlap is gone.
+export function bondCharacter(
+  R: number,
+  cMax = C_H_BONDED,
+  rOverlap = 2.5,
+): number {
+  if (R >= rOverlap) return 0;
+  if (R <= BOND_LENGTH_ANGSTROM) return cMax;
+  return (cMax * (rOverlap - R)) / (rOverlap - BOND_LENGTH_ANGSTROM);
+}
 
 // Normalisation N = √(ζ³/π) for a 1s Slater χ(r) = N·exp(−ζr), ζ in Å⁻¹.
 const N_HE = Math.sqrt((ZETA_HE * ZETA_HE * ZETA_HE) / Math.PI);
@@ -60,8 +58,7 @@ function slater(
   return norm * Math.exp(-zeta * r);
 }
 
-// Core density at a point (Å) given explicit nucleus positions and the He/H
-// mixing coefficient c_H. c_H = 0 → pure helium cloud; c_H ≈ 0.3 → bonded HeH⁺.
+// Density at a point (Å) for given nucleus positions and mixing coefficient.
 export function densityCore(
   x: number,
   y: number,
@@ -77,8 +74,7 @@ export function densityCore(
   return psi * psi;
 }
 
-// Build a reusable ρ(x,y,z) for fixed nucleus positions / coefficient — handed
-// to the electron swarm so it can sample |ψ|² without re-specifying the model.
+// ρ(x,y,z) closure for fixed nuclei / coefficient, consumed by the swarm.
 export function makeHehDensity(
   hePos: Vec3,
   hPos: Vec3,
